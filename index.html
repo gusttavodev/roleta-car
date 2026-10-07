@@ -130,11 +130,19 @@ function createDrawBag(count,storageKey){
  };
 }
 
-function rotationFor(current,index,count){
+function spinPlan(current,index,count){
  const slice=360/count;
  const target=norm(-(index+.5)*slice);
- const forward=norm(target-norm(current));
- return current+360*(6+randomInt(3))+forward;
+ const clockwise=randomInt(2)===0;
+ const turns=7+randomInt(8);
+ const distance=clockwise
+   ? norm(target-norm(current))
+   : norm(norm(current)-target);
+ const rotation=clockwise
+   ? current+360*turns+distance
+   : current-360*turns-distance;
+ const duration=4800+randomInt(2401);
+ return {rotation,duration};
 }
 
 const nextCar=createDrawBag(cars.length,"ac-roulette-cars-v2");
@@ -159,21 +167,23 @@ document.getElementById("spin").addEventListener("click",()=>{
 
  const carIndex=nextCar();
  const trackIndex=nextTrack();
- carRot=rotationFor(carRot,carIndex,cars.length);
- trackRot=rotationFor(trackRot,trackIndex,tracks.length);
+ const carSpin=spinPlan(carRot,carIndex,cars.length);
+ const trackSpin=spinPlan(trackRot,trackIndex,tracks.length);
+ carRot=carSpin.rotation;
+ trackRot=trackSpin.rotation;
 
- cw.style.transition="transform 5.5s cubic-bezier(.12,.74,.10,1)";
- tw.style.transition="transform 6s cubic-bezier(.12,.74,.10,1)";
+ cw.style.transition=`transform ${carSpin.duration}ms cubic-bezier(.12,.74,.10,1)`;
+ tw.style.transition=`transform ${trackSpin.duration}ms cubic-bezier(.12,.74,.10,1)`;
  cw.style.transform=`rotate(${carRot}deg)`;
  tw.style.transform=`rotate(${trackRot}deg)`;
 
  setTimeout(()=>{
    const v=cars[carIndex];
-   cr.textContent=v.category;
-   cs.textContent="Carro: "+v.car;
+   cr.textContent=v.car;
+   cs.textContent="Categoria: "+v.category;
    cl.href=v.url;
    cl.style.display="inline-flex";
- },5550);
+ },carSpin.duration+50);
 
  setTimeout(()=>{
    const v=tracks[trackIndex];
@@ -181,9 +191,12 @@ document.getElementById("spin").addEventListener("click",()=>{
    ts.textContent="Assetto Corsa";
    tl.href=v.url;
    tl.style.display="inline-flex";
+ },trackSpin.duration+50);
+
+ setTimeout(()=>{
    busy=false;
    btn.disabled=false;
- },6050);
+ },Math.max(carSpin.duration,trackSpin.duration)+50);
 });
 </script>
 </body>
