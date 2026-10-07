@@ -63,8 +63,15 @@ canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 18px 42px rgba(
 
 <script>
 const cars=[{"category": "GT1", "car": "Pagani Zonda C12R", "url": "https://www.overtake.gg/downloads/pagani-zonda-c12r.87301/"}, {"category": "Classic Sports", "car": "Alfa Romeo 33 Stradale Physics Remake", "url": "https://www.overtake.gg/downloads/alfa-romeo-33-stradale-physics-remake.87108/"}, {"category": "Track Hypercar", "car": "Pagani Huayra R Evo", "url": "https://www.overtake.gg/downloads/pagani-huayra-r-evo.87188/"}, {"category": "Road / Track", "car": "Porsche 911 Carrera S 992", "url": "https://www.overtake.gg/downloads/porsche-911-carrera-s-sc-pdk-992-sahare-realism-v3-mod-by-owner.87076/"}, {"category": "Hot Hatch", "car": "Arria Menard R26.R Trophy Evo", "url": "https://www.overtake.gg/downloads/arria-menard-r26-r-trophy-evo.87075/"}, {"category": "Safety Car", "car": "Corvette C8 Safety Car", "url": "https://www.overtake.gg/downloads/corvette-c8-safety-car.87068/"}, {"category": "TCR", "car": "LADA Vesta NG TCR", "url": "https://www.overtake.gg/downloads/lada-vesta-ng-tcr-touring.79611/"}, {"category": "Touring", "car": "LADA Vesta Touring", "url": "https://www.overtake.gg/downloads/lada-vesta-touring.58428/"}, {"category": "Prototype", "car": "BR03", "url": "https://www.overtake.gg/downloads/br03.48030/"}, {"category": "TCR", "car": "Audi RS3 LMS TCR", "url": "https://www.overtake.gg/downloads/audi-rs3-lms-tcr.87034/"}, {"category": "Cup Car", "car": "Abarth Punto Competizione", "url": "https://www.overtake.gg/downloads/abarth-punto-competizione-%E2%80%93-full-physics-csp-graphics-rework.86845/"}, {"category": "Concept Hypercar", "car": "Ford GT90", "url": "https://www.overtake.gg/downloads/ford-gt90.86556/"}, {"category": "Historic", "car": "Renault 4CV Rework", "url": "https://www.overtake.gg/downloads/renault-4cv-%E2%80%93-physics-graphics-rework.86745/"}, {"category": "One-Make", "car": "MINI Cooper JCW Challenge F56", "url": "https://www.overtake.gg/downloads/mini-cooper-jcw-challenge-f56-%E2%80%93-physics-rework.86770/"}, {"category": "Australian Classic", "car": "Valiant VJ Charger Collection", "url": "https://www.overtake.gg/downloads/mjc-solutions-presents-valiant-vj-series-charger-collection.86117/"}, {"category": "Kart", "car": "Discoverer FX7 Rental Kart 200cc", "url": "https://www.overtake.gg/downloads/discoverer-fx7-rental-kart-200cc.80526/"}, {"category": "Kart", "car": "Discoverer FX5 4T Kart 270cc", "url": "https://www.overtake.gg/downloads/discoverer-fx5-4t-kart-270cc.86538/"}, {"category": "Club Racing", "car": "Suzuki Swift Sport Challenge UK", "url": "https://www.overtake.gg/downloads/suzuki-swift-sport-challenge-uk.86357/"}, {"category": "Tuned JDM", "car": "Mazda RX7 LBWK", "url": "https://www.overtake.gg/downloads/mazda-rx7-lbwk.86354/"}, {"category": "Touge", "car": "Nissan S12 Silvia Kouki", "url": "https://www.overtake.gg/downloads/nissan-s12-silvia-kouki.86262/"}, {"category": "GT / Tuned", "car": "BMW M3 GTR", "url": "https://www.overtake.gg/downloads/bmw-m3-gtr.85902/"}, {"category": "Historic GT", "car": "Ford GT40 Mk1", "url": "https://www.overtake.gg/downloads/ford-gt40-mk1-%E2%80%93-realistic-physics-update-kunos-edit.85642/"}, {"category": "Club Racing", "car": "Citroen 2CV UK Club Class", "url": "https://www.overtake.gg/downloads/citroen-2cv-uk-club-class.63818/"}, {"category": "Class 1", "car": "Alfa Romeo Giulia Class 1", "url": "https://www.overtake.gg/downloads/alfa-romeo-giulia-class-1.85381/"}, {"category": "Class 1", "car": "MTRacing Porsche 911 Class 1", "url": "https://www.overtake.gg/downloads/mtracing-porsche-911-class-1.83848/"}, {"category": "Spec Racing", "car": "Spec Racer Ford GEN 2", "url": "https://www.overtake.gg/downloads/spec-racer-ford-gen-2-srf.28643/"}, {"category": "Legends Cars", "car": "Legends Ford '34 Coupe", "url": "https://www.overtake.gg/downloads/legends-cars-mod.30281/"}, {"category": "JDM", "car": "Nissan Skyline R33 GT-R / GTS25t", "url": "https://www.overtake.gg/downloads/nissan-skyline-r33-gt-r-and-gts25t.65772/"}];
+const excludedCarNames=new Set([
+ "Alfa Romeo 33 Stradale Physics Remake",
+ "Ford GT40 Mk1"
+]);
 cars.splice(0,cars.length,
- ...cars.filter(({category})=>!new Set(["Rally","Rallye","Drift","Kart"]).has(category)),
+ ...cars.filter(({category,car})=>
+   !new Set(["Rally","Rallye","Drift","Kart"]).has(category)&&
+   !excludedCarNames.has(car)
+ ),
  {"category":"LMP1","car":"Epsilon Euskadi EE1 Judd","url":"https://www.overtake.gg/downloads/epsilon-euskadi-ee1-judd-for-assetto-corsa.53218/"},
  {"category":"Road Hypercar","car":"Koenigsegg CCXR Trevita","url":"https://www.overtake.gg/downloads/koenigsegg-ccxr-trevita-mod-for-assetto-corsa.83969/"},
  {"category":"Daytona Prototype","car":"Corvette Daytona Prototype","url":"https://www.overtake.gg/downloads/ier-car-pack-1-uscc-mod.7348/"},
@@ -79,20 +86,22 @@ const assettoWorldCars=[
  {"category":"Group C","car":"Jaguar XJR-9 LM","url":"https://www.assettoworld.com/car/jaguar-xjr-9-lm-1"},
  {"category":"Formula 1","car":"Virgin VR-01","url":"https://www.assettoworld.com/car/virgin-vr-01"},
  {"category":"Formula 4","car":"Mygale 21 Formule 4 Gen 2","url":"https://www.assettoworld.com/car/mygale-21-formule-4-gen-2"},
- {"category":"Road Hypercar","car":"Ferrari 288 GTO Evoluzione Stradale","url":"https://www.assettoworld.com/car/ferrari-288-gto-evoluzione-stradale"},
+ {"category":"GT Racing","car":"Ferrari F430 GT Scuderia","url":"https://www.assettoworld.com/car/ferrari-f430-gt-scuderia"},
  {"category":"IMSA GTX","car":"Datsun 280ZX IMSA GTX","url":"https://www.assettoworld.com/car/datsun-280zx-imsa-gtx"},
- {"category":"Sports Prototype","car":"Ferrari 333 SP","url":"https://www.assettoworld.com/car/ferrari-333-sp"},
+ {"category":"Classic Touring","car":"Datsun 510","url":"https://www.assettoworld.com/car/datsun-510"},
  {"category":"Group C","car":"Aston Martin AMR1","url":"https://www.assettoworld.com/car/aston-martin-amr1-1"},
  {"category":"Sports Sedan","car":"Cadillac CTS-V 2004","url":"https://www.assettoworld.com/car/cadillac-cts-v-2004-1"},
  {"category":"Classic Muscle","car":"Ford Mustang Mach 1","url":"https://www.assettoworld.com/car/ford-mustang-mach-1"},
- {"category":"Classic Muscle","car":"Ford Mustang GT 390R 1967","url":"https://www.assettoworld.com/car/ford-mustang-gt-390r"},
- {"category":"Road Sports","car":"Porsche 911 Turbo S 2021","url":"https://www.assettoworld.com/car/porsche-911-turbo-s-2021"},
+ {"category":"Classic Touring","car":"Datsun 1200","url":"https://www.assettoworld.com/car/datsun-1200"},
+ {"category":"Classic Sports","car":"Datsun Fairlady 2000 GTS","url":"https://www.assettoworld.com/car/datsun-fairlady-2000-gts-gen2"},
  {"category":"Safety Car","car":"Chevrolet Corvette C7 Safety Car","url":"https://www.assettoworld.com/car/chevrolet-corvette-c7-safety-car"},
  {"category":"SUV","car":"Toyota Land Cruiser J200","url":"https://www.assettoworld.com/car/toyota-land-cruiser-j200"},
- {"category":"Movie Car","car":"Toyota Supra Fast & Furious","url":"https://www.assettoworld.com/car/toyota-supra-fast-furious-edition-1"},
- {"category":"Hot Hatch","car":"Fiat Uno Turbo i.e. Mk1","url":"https://www.assettoworld.com/car/fiat-uno-turbo-ie-mk1"},
- {"category":"GT1","car":"Mercedes-Benz CLR LM","url":"https://www.assettoworld.com/car/mercedes-benz-clr-lm"},
- {"category":"JDM Racing","car":"Nissan Skyline GT-R Racing Lagoon","url":"https://www.assettoworld.com/car/nissan-skyline-gt-r-racing-lagoon-monster-r"}
+ {"category":"Formula 1","car":"Aston Martin AMR21","url":"https://www.assettoworld.com/car/aston-martin-amr21"},
+ {"category":"Touring Race Car","car":"Cadillac CTS-V Race Car","url":"https://www.assettoworld.com/car/2004-cadillac-cts-v-race-car-1"},
+ {"category":"Custom Muscle","car":"Ford Mustang Mach 40","url":"https://www.assettoworld.com/car/ford-mustang-mach-40-1"},
+ {"category":"JDM Racing","car":"Nissan Skyline GT-R Racing Lagoon","url":"https://www.assettoworld.com/car/nissan-skyline-gt-r-racing-lagoon-monster-r"},
+ {"category":"Road Sports","car":"Chevrolet Corvette C7 ZR1","url":"https://www.assettoworld.com/car/chevrolet-corvette-c7-zr1"},
+ {"category":"Modern Muscle","car":"Ford Mustang Mach 1 2021","url":"https://www.assettoworld.com/car/ford-mustang-mach-1-2021"}
 ];
 
 const assettoWorldTracks=[
@@ -215,7 +224,7 @@ function spinPlan(current,index,count){
  return {rotation,duration};
 }
 
-const nextCar=createDrawBag(cars.length,"ac-roulette-cars-v5");
+const nextCar=createDrawBag(cars.length,"ac-roulette-cars-v6");
 const nextTrack=createDrawBag(tracks.length,"ac-roulette-tracks-v3");
 
 function updateControls(){
