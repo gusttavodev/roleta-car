@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Assetto Corsa Roulette — 30x30</title>
+<title>Assetto Corsa Roulette — 50x50</title>
 <style>
 *{box-sizing:border-box}
 :root{--bg:#070707;--fg:#f5f5f5;--muted:#888;--accent:#ff3b30;--line:#262626}
@@ -33,7 +33,7 @@ canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 18px 42px rgba(
 <main>
 <div class="grid">
 <section class="unit">
-<div class="label">30 carros / categorias</div>
+<div class="label">50 carros / categorias</div>
 <div class="wrap" id="car-wrap" role="button" tabindex="0" aria-label="Girar somente a roleta de carros" aria-disabled="false" title="Clique para girar somente os carros">
 <canvas id="cw" width="900" height="900" aria-hidden="true"></canvas>
 <div class="pointer"></div>
@@ -45,7 +45,7 @@ canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 18px 42px rgba(
 </section>
 
 <section class="unit">
-<div class="label">30 pistas</div>
+<div class="label">50 pistas</div>
 <div class="wrap" id="track-wrap" role="button" tabindex="0" aria-label="Girar somente a roleta de pistas" aria-disabled="false" title="Clique para girar somente as pistas">
 <canvas id="tw" width="900" height="900" aria-hidden="true"></canvas>
 <div class="pointer"></div>
@@ -71,6 +71,55 @@ cars.splice(0,cars.length,
  {"category":"GT America","car":"Porsche 911 GT America","url":"https://www.overtake.gg/downloads/porsche-911-gt-america-ier-simulations-uscc-mod.27798/"}
 );
 const tracks=[{"name": "Feldbergring", "url": "https://www.overtake.gg/downloads/feldbergring.21195/"}, {"name": "Fonteny", "url": "https://www.overtake.gg/downloads/fonteny.30137/"}, {"name": "LA Canyons", "url": "https://www.overtake.gg/downloads/la-canyons.15067/"}, {"name": "Deutschlandring", "url": "https://www.overtake.gg/downloads/deutschlandring.25977/"}, {"name": "Bridgehampton", "url": "https://www.overtake.gg/downloads/bridgehampton-race-circuit.6604/"}, {"name": "Union Island", "url": "https://www.overtake.gg/downloads/union-island.45276/"}, {"name": "Sachsenring 2022", "url": "https://www.overtake.gg/downloads/sachsenring-2022.41511/"}, {"name": "Tor Poznań", "url": "https://www.overtake.gg/downloads/tor-pozna%C5%84.6118/"}, {"name": "Bremgarten 1950s", "url": "https://www.overtake.gg/downloads/bremgarten-1950s.43576/"}, {"name": "Thomson Road GP", "url": "https://www.overtake.gg/downloads/thomson-road-grand-prix.13694/"}, {"name": "Battenbergring", "url": "https://www.overtake.gg/downloads/battenbergring.51838/"}, {"name": "Road America", "url": "https://www.overtake.gg/downloads/road-america.32732/"}, {"name": "Watkins Glen", "url": "https://www.overtake.gg/downloads/watkins-glen-international.20204/"}, {"name": "Donington Park", "url": "https://www.overtake.gg/downloads/donington-park.3031/"}, {"name": "Virginia International Raceway", "url": "https://www.overtake.gg/downloads/virginia-international-raceway.11892/"}, {"name": "Riverside International Raceway", "url": "https://www.overtake.gg/downloads/riverside-international-raceway.9492/"}, {"name": "Okayama International", "url": "https://www.overtake.gg/downloads/okayama-international-circuit.15846/"}, {"name": "Bikernieki", "url": "https://www.overtake.gg/downloads/bikernieki-race-track.17186/"}, {"name": "Pacific Coast", "url": "https://www.overtake.gg/downloads/pacific-coast.12087/"}, {"name": "Donington Park 1938", "url": "https://www.overtake.gg/downloads/donington-park-grand-prix-circuit-1938.17313/"}, {"name": "Kyalami 2016", "url": "https://www.overtake.gg/downloads/kyalami-2016.29786/"}, {"name": "Road Atlanta", "url": "https://www.overtake.gg/downloads/road-atlanta.18293/"}, {"name": "Horsma Raceway", "url": "https://www.overtake.gg/downloads/horsma-raceway.27713/"}, {"name": "Goodwood Circuit", "url": "https://www.overtake.gg/downloads/goodwood-circuit.17228/"}, {"name": "LuccaRing", "url": "https://www.overtake.gg/downloads/luccaring-circuito-dei-baluardi.6544/"}, {"name": "New Jersey Motorsports Park", "url": "https://www.overtake.gg/downloads/new-jersey-motorsports-park-lightning.14212/"}, {"name": "High Force", "url": "https://www.overtake.gg/downloads/high-force.30347/"}, {"name": "Zwartkops Raceway", "url": "https://www.overtake.gg/downloads/zwartkops-raceway.52403/"}, {"name": "Deep Forest Raceway", "url": "https://www.overtake.gg/downloads/deep-forest-raceway.32848/"}, {"name": "Sveg Raceway", "url": "https://www.overtake.gg/downloads/sveg-raceway.18818/"}];
+
+const assettoWorldCars=[
+ {"category":"Road Sports","car":"Ferrari F430 Scuderia","url":"https://www.assettoworld.com/car/ferrari-f430-scuderia-2"},
+ {"category":"Historic NASCAR","car":"Chevrolet Bel Air 1957 NASCAR","url":"https://www.assettoworld.com/car/chevrolet-bel-air-1957-nascar"},
+ {"category":"BTCC","car":"Ford Mondeo BTCC 1993","url":"https://www.assettoworld.com/car/btcc-1993-ford-mondeo-s1"},
+ {"category":"Group C","car":"Jaguar XJR-9 LM","url":"https://www.assettoworld.com/car/jaguar-xjr-9-lm-1"},
+ {"category":"Formula 1","car":"Virgin VR-01","url":"https://www.assettoworld.com/car/virgin-vr-01"},
+ {"category":"Formula 4","car":"Mygale 21 Formule 4 Gen 2","url":"https://www.assettoworld.com/car/mygale-21-formule-4-gen-2"},
+ {"category":"Road Hypercar","car":"Ferrari 288 GTO Evoluzione Stradale","url":"https://www.assettoworld.com/car/ferrari-288-gto-evoluzione-stradale"},
+ {"category":"IMSA GTX","car":"Datsun 280ZX IMSA GTX","url":"https://www.assettoworld.com/car/datsun-280zx-imsa-gtx"},
+ {"category":"Sports Prototype","car":"Ferrari 333 SP","url":"https://www.assettoworld.com/car/ferrari-333-sp"},
+ {"category":"Group C","car":"Aston Martin AMR1","url":"https://www.assettoworld.com/car/aston-martin-amr1-1"},
+ {"category":"Sports Sedan","car":"Cadillac CTS-V 2004","url":"https://www.assettoworld.com/car/cadillac-cts-v-2004-1"},
+ {"category":"Classic Muscle","car":"Ford Mustang Mach 1","url":"https://www.assettoworld.com/car/ford-mustang-mach-1"},
+ {"category":"Classic Muscle","car":"Ford Mustang GT 390R 1967","url":"https://www.assettoworld.com/car/ford-mustang-gt-390r"},
+ {"category":"Road Sports","car":"Porsche 911 Turbo S 2021","url":"https://www.assettoworld.com/car/porsche-911-turbo-s-2021"},
+ {"category":"Safety Car","car":"Chevrolet Corvette C7 Safety Car","url":"https://www.assettoworld.com/car/chevrolet-corvette-c7-safety-car"},
+ {"category":"SUV","car":"Toyota Land Cruiser J200","url":"https://www.assettoworld.com/car/toyota-land-cruiser-j200"},
+ {"category":"Movie Car","car":"Toyota Supra Fast & Furious","url":"https://www.assettoworld.com/car/toyota-supra-fast-furious-edition-1"},
+ {"category":"Hot Hatch","car":"Fiat Uno Turbo i.e. Mk1","url":"https://www.assettoworld.com/car/fiat-uno-turbo-ie-mk1"},
+ {"category":"GT1","car":"Mercedes-Benz CLR LM","url":"https://www.assettoworld.com/car/mercedes-benz-clr-lm"},
+ {"category":"JDM Racing","car":"Nissan Skyline GT-R Racing Lagoon","url":"https://www.assettoworld.com/car/nissan-skyline-gt-r-racing-lagoon-monster-r"}
+];
+
+const assettoWorldTracks=[
+ {"name":"Misty Loch","url":"https://www.assettoworld.com/track/misty-loch"},
+ {"name":"Kuala Lumpur Street Circuit","url":"https://www.assettoworld.com/track/kuala-lumpur-street-circuit"},
+ {"name":"777 Speedway","url":"https://www.assettoworld.com/track/777-speedway-rolling-start"},
+ {"name":"Chicago Street Circuit","url":"https://www.assettoworld.com/track/chicago-street-circuit"},
+ {"name":"Mirandopolis","url":"https://www.assettoworld.com/track/mirandopolis_sp"},
+ {"name":"Arrabassada","url":"https://www.assettoworld.com/track/arrabassada"},
+ {"name":"Mulholland Drive Freeroam","url":"https://www.assettoworld.com/track/mulholland-drive-freeroam"},
+ {"name":"Georgia Freeroam","url":"https://www.assettoworld.com/track/ac_georgia-enter"},
+ {"name":"Real Paris Freeroam","url":"https://www.assettoworld.com/track/realparis_freeroam"},
+ {"name":"Real Monaco","url":"https://www.assettoworld.com/track/realmonaco-2"},
+ {"name":"Fukuoka","url":"https://www.assettoworld.com/track/fukuoka"},
+ {"name":"Spa-Francorchamps 1966","url":"https://www.assettoworld.com/track/spa-francorchamps-1966"},
+ {"name":"Autopolis Oita","url":"https://www.assettoworld.com/track/autopolis-oita"},
+ {"name":"Shuto Expressway C1 Outer Loop","url":"https://www.assettoworld.com/track/shuto-expressway-c1-outer-loop"},
+ {"name":"Circuit Pla","url":"https://www.assettoworld.com/track/circuit-pla"},
+ {"name":"Domina Coral Bay","url":"https://www.assettoworld.com/track/domina-coral-bay"},
+ {"name":"Sebring 1988","url":"https://www.assettoworld.com/track/sebring_rtb_v08"},
+ {"name":"Kirkistown Motor Racing Circuit","url":"https://www.assettoworld.com/track/kirkistown-motor-racing-circuit"},
+ {"name":"Gotland Ring","url":"https://www.assettoworld.com/track/gotland-ring"},
+ {"name":"Atlanta Motor Speedway","url":"https://www.assettoworld.com/track/atlanta-motor-speedway"}
+];
+
+cars.push(...assettoWorldCars);
+tracks.push(...assettoWorldTracks);
 
 function draw(canvas,labels){
  const count=labels.length;
@@ -166,8 +215,8 @@ function spinPlan(current,index,count){
  return {rotation,duration};
 }
 
-const nextCar=createDrawBag(cars.length,"ac-roulette-cars-v4");
-const nextTrack=createDrawBag(tracks.length,"ac-roulette-tracks-v2");
+const nextCar=createDrawBag(cars.length,"ac-roulette-cars-v5");
+const nextTrack=createDrawBag(tracks.length,"ac-roulette-tracks-v3");
 
 function updateControls(){
  btn.disabled=carBusy||trackBusy;
