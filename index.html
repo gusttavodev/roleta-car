@@ -12,7 +12,9 @@ main{width:min(1160px,96vw);padding:28px 14px 38px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:42px}
 .unit{display:flex;flex-direction:column;align-items:center;gap:16px;min-width:0}
 .label{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-.wrap{position:relative;width:min(42vw,470px);aspect-ratio:1;display:grid;place-items:center}
+.wrap{position:relative;width:min(42vw,470px);aspect-ratio:1;display:grid;place-items:center;border-radius:50%;cursor:pointer;outline:none}
+.wrap:focus-visible{box-shadow:0 0 0 4px var(--bg),0 0 0 7px var(--accent)}
+.wrap[aria-disabled="true"]{cursor:wait}
 canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 18px 42px rgba(0,0,0,.55))}
 .pointer{position:absolute;right:-6px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:15px solid transparent;border-bottom:15px solid transparent;border-left:29px solid #fff;z-index:4}
 .hub{position:absolute;width:72px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:#0c0c0c;border:2px solid #222;font-size:.58rem;font-weight:900;letter-spacing:.1em;z-index:3}
@@ -32,8 +34,8 @@ canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 18px 42px rgba(
 <div class="grid">
 <section class="unit">
 <div class="label">30 carros / categorias</div>
-<div class="wrap">
-<canvas id="cw" width="900" height="900" aria-label="Roleta com 30 carros"></canvas>
+<div class="wrap" id="car-wrap" role="button" tabindex="0" aria-label="Girar somente a roleta de carros" aria-disabled="false" title="Clique para girar somente os carros">
+<canvas id="cw" width="900" height="900" aria-hidden="true"></canvas>
 <div class="pointer"></div>
 <div class="hub">CAR</div>
 </div>
@@ -44,8 +46,8 @@ canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 18px 42px rgba(
 
 <section class="unit">
 <div class="label">30 pistas</div>
-<div class="wrap">
-<canvas id="tw" width="900" height="900" aria-label="Roleta com 30 pistas"></canvas>
+<div class="wrap" id="track-wrap" role="button" tabindex="0" aria-label="Girar somente a roleta de pistas" aria-disabled="false" title="Clique para girar somente as pistas">
+<canvas id="tw" width="900" height="900" aria-hidden="true"></canvas>
 <div class="pointer"></div>
 <div class="hub">TRACK</div>
 </div>
@@ -56,7 +58,7 @@ canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 18px 42px rgba(
 </div>
 
 <button id="spin">Girar as duas</button>
-<div class="note">30 opções de cada lado. Cada opção sai uma vez antes de a lista ser embaralhada novamente.</div>
+<div class="note">Clique em uma roleta para girá-la separadamente. Cada opção sai uma vez antes de a lista ser embaralhada novamente.</div>
 </main>
 
 <script>
@@ -83,9 +85,14 @@ function draw(canvas,count){
 }
 
 const cw=document.getElementById("cw"),tw=document.getElementById("tw");
+const carWrap=document.getElementById("car-wrap"),trackWrap=document.getElementById("track-wrap");
+const btn=document.getElementById("spin");
+const cr=document.getElementById("cr"),tr=document.getElementById("tr");
+const cs=document.getElementById("cs"),ts=document.getElementById("ts");
+const cl=document.getElementById("cl"),tl=document.getElementById("tl");
 draw(cw,cars.length);draw(tw,tracks.length);
 
-let carRot=0,trackRot=0,busy=false;
+let carRot=0,trackRot=0,carBusy=false,trackBusy=false;
 const norm=d=>((d%360)+360)%360;
 
 // Uses the browser's random source without modulo bias.
@@ -148,34 +155,26 @@ function spinPlan(current,index,count){
 const nextCar=createDrawBag(cars.length,"ac-roulette-cars-v2");
 const nextTrack=createDrawBag(tracks.length,"ac-roulette-tracks-v2");
 
-document.getElementById("spin").addEventListener("click",()=>{
- if(busy)return;
- busy=true;
- const btn=document.getElementById("spin");
- btn.disabled=true;
+function updateControls(){
+ btn.disabled=carBusy||trackBusy;
+ carWrap.setAttribute("aria-disabled",String(carBusy));
+ trackWrap.setAttribute("aria-disabled",String(trackBusy));
+}
 
- const cr=document.getElementById("cr"),tr=document.getElementById("tr");
- const cs=document.getElementById("cs"),ts=document.getElementById("ts");
- const cl=document.getElementById("cl"),tl=document.getElementById("tl");
-
+function spinCar(){
+ if(carBusy)return;
+ carBusy=true;
+ updateControls();
  cr.textContent="...";
- tr.textContent="...";
  cs.textContent="";
- ts.textContent="";
  cl.style.display="none";
- tl.style.display="none";
 
  const carIndex=nextCar();
- const trackIndex=nextTrack();
  const carSpin=spinPlan(carRot,carIndex,cars.length);
- const trackSpin=spinPlan(trackRot,trackIndex,tracks.length);
  carRot=carSpin.rotation;
- trackRot=trackSpin.rotation;
 
  cw.style.transition=`transform ${carSpin.duration}ms cubic-bezier(.12,.74,.10,1)`;
- tw.style.transition=`transform ${trackSpin.duration}ms cubic-bezier(.12,.74,.10,1)`;
  cw.style.transform=`rotate(${carRot}deg)`;
- tw.style.transform=`rotate(${trackRot}deg)`;
 
  setTimeout(()=>{
    const v=cars[carIndex];
@@ -183,7 +182,25 @@ document.getElementById("spin").addEventListener("click",()=>{
    cs.textContent="Categoria: "+v.category;
    cl.href=v.url;
    cl.style.display="inline-flex";
+   carBusy=false;
+   updateControls();
  },carSpin.duration+50);
+}
+
+function spinTrack(){
+ if(trackBusy)return;
+ trackBusy=true;
+ updateControls();
+ tr.textContent="...";
+ ts.textContent="";
+ tl.style.display="none";
+
+ const trackIndex=nextTrack();
+ const trackSpin=spinPlan(trackRot,trackIndex,tracks.length);
+ trackRot=trackSpin.rotation;
+
+ tw.style.transition=`transform ${trackSpin.duration}ms cubic-bezier(.12,.74,.10,1)`;
+ tw.style.transform=`rotate(${trackRot}deg)`;
 
  setTimeout(()=>{
    const v=tracks[trackIndex];
@@ -191,13 +208,28 @@ document.getElementById("spin").addEventListener("click",()=>{
    ts.textContent="Assetto Corsa";
    tl.href=v.url;
    tl.style.display="inline-flex";
+   trackBusy=false;
+   updateControls();
  },trackSpin.duration+50);
+}
 
- setTimeout(()=>{
-   busy=false;
-   btn.disabled=false;
- },Math.max(carSpin.duration,trackSpin.duration)+50);
-});
+function spinBoth(){
+ if(carBusy||trackBusy)return;
+ spinCar();
+ spinTrack();
+}
+
+function keyboardSpin(event,spin){
+ if(event.key!=="Enter"&&event.key!==" ")return;
+ event.preventDefault();
+ spin();
+}
+
+carWrap.addEventListener("click",spinCar);
+trackWrap.addEventListener("click",spinTrack);
+carWrap.addEventListener("keydown",event=>keyboardSpin(event,spinCar));
+trackWrap.addEventListener("keydown",event=>keyboardSpin(event,spinTrack));
+btn.addEventListener("click",spinBoth);
 </script>
 </body>
 </html>
