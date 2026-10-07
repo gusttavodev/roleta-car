@@ -109,24 +109,30 @@ const assettoWorldTracks=[
  {"name":"Kuala Lumpur Street Circuit","url":"https://www.assettoworld.com/track/kuala-lumpur-street-circuit"},
  {"name":"777 Speedway","url":"https://www.assettoworld.com/track/777-speedway-rolling-start"},
  {"name":"Chicago Street Circuit","url":"https://www.assettoworld.com/track/chicago-street-circuit"},
- {"name":"Mirandopolis","url":"https://www.assettoworld.com/track/mirandopolis_sp"},
- {"name":"Arrabassada","url":"https://www.assettoworld.com/track/arrabassada"},
- {"name":"Mulholland Drive Freeroam","url":"https://www.assettoworld.com/track/mulholland-drive-freeroam"},
- {"name":"Georgia Freeroam","url":"https://www.assettoworld.com/track/ac_georgia-enter"},
- {"name":"Real Paris Freeroam","url":"https://www.assettoworld.com/track/realparis_freeroam"},
- {"name":"Real Monaco","url":"https://www.assettoworld.com/track/realmonaco-2"},
- {"name":"Fukuoka","url":"https://www.assettoworld.com/track/fukuoka"},
  {"name":"Spa-Francorchamps 1966","url":"https://www.assettoworld.com/track/spa-francorchamps-1966"},
  {"name":"Autopolis Oita","url":"https://www.assettoworld.com/track/autopolis-oita"},
- {"name":"Shuto Expressway C1 Outer Loop","url":"https://www.assettoworld.com/track/shuto-expressway-c1-outer-loop"},
  {"name":"Circuit Pla","url":"https://www.assettoworld.com/track/circuit-pla"},
  {"name":"Domina Coral Bay","url":"https://www.assettoworld.com/track/domina-coral-bay"},
  {"name":"Sebring 1988","url":"https://www.assettoworld.com/track/sebring_rtb_v08"},
  {"name":"Kirkistown Motor Racing Circuit","url":"https://www.assettoworld.com/track/kirkistown-motor-racing-circuit"},
  {"name":"Gotland Ring","url":"https://www.assettoworld.com/track/gotland-ring"},
- {"name":"Atlanta Motor Speedway","url":"https://www.assettoworld.com/track/atlanta-motor-speedway"}
+ {"name":"Atlanta Motor Speedway","url":"https://www.assettoworld.com/track/atlanta-motor-speedway"},
+ {"name":"Cadwell Park","url":"https://www.overtake.gg/downloads/cadwell-park.11507/"},
+ {"name":"High Plains Raceway","url":"https://www.overtake.gg/downloads/high-plains-raceway.34284/"},
+ {"name":"Rusty Valley Raceway","url":"https://www.overtake.gg/downloads/rusty-valley-raceway.53988/"},
+ {"name":"Crowntown Raceway","url":"https://www.overtake.gg/downloads/crowntown.60969/"},
+ {"name":"Chuckwalla Valley Raceway","url":"https://www.overtake.gg/downloads/chuckwalla-valley-raceway.39023/"},
+ {"name":"Ahvenisto Race Circuit","url":"https://www.overtake.gg/downloads/ahvenisto-race-circuit.16490/"},
+ {"name":"Autodrom Most","url":"https://www.overtake.gg/downloads/autodrom-most-by-zdenek.26320/"},
+ {"name":"Algarve International Circuit","url":"https://www.overtake.gg/downloads/algarve-international-circuit.2874/"},
+ {"name":"Croft Circuit","url":"https://www.overtake.gg/downloads/croft-circuit.16806/"},
+ {"name":"Tsukuba Circuit","url":"https://www.overtake.gg/downloads/tsukuba-circuit.2629/"},
+ {"name":"Circuit de la Sarthe (Le Mans)","url":"https://www.overtake.gg/downloads/circuit-24h-lemans.2482/"},
+ {"name":"Circuit de Chambley","url":"https://www.overtake.gg/downloads/circuit-chambley-par-race-system.71904/"}
 ];
 
+const nonRaceTracks=new Set(["LA Canyons","Union Island","Pacific Coast","High Force"]);
+tracks.splice(0,tracks.length,...tracks.filter(({name})=>!nonRaceTracks.has(name)));
 cars.push(...assettoWorldCars);
 tracks.push(...assettoWorldTracks);
 
@@ -225,7 +231,7 @@ function spinPlan(current,index,count){
 }
 
 const nextCar=createDrawBag(cars.length,"ac-roulette-cars-v6");
-const nextTrack=createDrawBag(tracks.length,"ac-roulette-tracks-v3");
+const nextTrack=createDrawBag(tracks.length,"ac-roulette-tracks-v4");
 
 function updateControls(){
  btn.disabled=carBusy||trackBusy;
