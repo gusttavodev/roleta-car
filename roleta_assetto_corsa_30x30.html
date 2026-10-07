@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Assetto Corsa Roulette — 30x30</title>
+<style>
+*{box-sizing:border-box}
+:root{--bg:#070707;--fg:#f5f5f5;--muted:#888;--accent:#ff3b30;--line:#262626}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);font-family:Inter,Arial,sans-serif;display:grid;place-items:center}
+main{width:min(1160px,96vw);padding:28px 14px 38px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:42px}
+.unit{display:flex;flex-direction:column;align-items:center;gap:16px;min-width:0}
+.label{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.wrap{position:relative;width:min(42vw,470px);aspect-ratio:1;display:grid;place-items:center}
+canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 18px 42px rgba(0,0,0,.55))}
+.pointer{position:absolute;right:-6px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:15px solid transparent;border-bottom:15px solid transparent;border-left:29px solid #fff;z-index:4}
+.hub{position:absolute;width:72px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:#0c0c0c;border:2px solid #222;font-size:.58rem;font-weight:900;letter-spacing:.1em;z-index:3}
+.result{min-height:48px;text-align:center;font-size:clamp(1.3rem,2.6vw,2.6rem);font-weight:900;letter-spacing:-.045em;text-transform:uppercase;overflow-wrap:anywhere}
+.sub{min-height:18px;text-align:center;color:var(--muted);font-size:.8rem;overflow-wrap:anywhere}
+.mod{display:none;color:#fff;text-decoration:none;border:1px solid var(--line);background:#151515;padding:11px 16px;border-radius:999px;font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.mod:hover{border-color:#555;background:#1c1c1c}
+#spin{display:block;margin:34px auto 0;border:0;border-radius:999px;background:var(--accent);color:#fff;padding:16px 38px;min-width:225px;font:inherit;font-weight:900;text-transform:uppercase;letter-spacing:.05em;cursor:pointer}
+#spin:disabled{opacity:.5;cursor:default}
+.note{text-align:center;color:#666;font-size:.72rem;margin:18px auto 0;line-height:1.5;max-width:780px}
+@media(max-width:760px){.grid{grid-template-columns:1fr;gap:36px}.wrap{width:min(88vw,500px)}}
+@media(prefers-reduced-motion:reduce){canvas{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<main>
+<div class="grid">
+<section class="unit">
+<div class="label">30 carros / categorias</div>
+<div class="wrap">
+<canvas id="cw" width="900" height="900" aria-label="Roleta com 30 carros"></canvas>
+<div class="pointer"></div>
+<div class="hub">CAR</div>
+</div>
+<div class="result" id="cr">—</div>
+<div class="sub" id="cs"></div>
+<a id="cl" class="mod" target="_blank" rel="noopener">Abrir mod do carro</a>
+</section>
+
+<section class="unit">
+<div class="label">30 pistas</div>
+<div class="wrap">
+<canvas id="tw" width="900" height="900" aria-label="Roleta com 30 pistas"></canvas>
+<div class="pointer"></div>
+<div class="hub">TRACK</div>
+</div>
+<div class="result" id="tr">—</div>
+<div class="sub" id="ts"></div>
+<a id="tl" class="mod" target="_blank" rel="noopener">Abrir mod da pista</a>
+</section>
+</div>
+
+<button id="spin">Girar as duas</button>
+<div class="note">30 opções de cada lado. Cada opção sai uma vez antes de a lista ser embaralhada novamente.</div>
+</main>
+
+<script>
+const cars=[{"category": "GT1", "car": "Pagani Zonda C12R", "url": "https://www.overtake.gg/downloads/pagani-zonda-c12r.87301/"}, {"category": "Classic Sports", "car": "Alfa Romeo 33 Stradale Physics Remake", "url": "https://www.overtake.gg/downloads/alfa-romeo-33-stradale-physics-remake.87108/"}, {"category": "Track Hypercar", "car": "Pagani Huayra R Evo", "url": "https://www.overtake.gg/downloads/pagani-huayra-r-evo.87188/"}, {"category": "Road / Track", "car": "Porsche 911 Carrera S 992", "url": "https://www.overtake.gg/downloads/porsche-911-carrera-s-sc-pdk-992-sahare-realism-v3-mod-by-owner.87076/"}, {"category": "Hot Hatch", "car": "Arria Menard R26.R Trophy Evo", "url": "https://www.overtake.gg/downloads/arria-menard-r26-r-trophy-evo.87075/"}, {"category": "Safety Car", "car": "Corvette C8 Safety Car", "url": "https://www.overtake.gg/downloads/corvette-c8-safety-car.87068/"}, {"category": "TCR", "car": "LADA Vesta NG TCR", "url": "https://www.overtake.gg/downloads/lada-vesta-ng-tcr-touring.79611/"}, {"category": "Touring", "car": "LADA Vesta Touring", "url": "https://www.overtake.gg/downloads/lada-vesta-touring.58428/"}, {"category": "Prototype", "car": "BR03", "url": "https://www.overtake.gg/downloads/br03.48030/"}, {"category": "TCR", "car": "Audi RS3 LMS TCR", "url": "https://www.overtake.gg/downloads/audi-rs3-lms-tcr.87034/"}, {"category": "Cup Car", "car": "Abarth Punto Competizione", "url": "https://www.overtake.gg/downloads/abarth-punto-competizione-%E2%80%93-full-physics-csp-graphics-rework.86845/"}, {"category": "Concept Hypercar", "car": "Ford GT90", "url": "https://www.overtake.gg/downloads/ford-gt90.86556/"}, {"category": "Historic", "car": "Renault 4CV Rework", "url": "https://www.overtake.gg/downloads/renault-4cv-%E2%80%93-physics-graphics-rework.86745/"}, {"category": "One-Make", "car": "MINI Cooper JCW Challenge F56", "url": "https://www.overtake.gg/downloads/mini-cooper-jcw-challenge-f56-%E2%80%93-physics-rework.86770/"}, {"category": "Australian Classic", "car": "Valiant VJ Charger Collection", "url": "https://www.overtake.gg/downloads/mjc-solutions-presents-valiant-vj-series-charger-collection.86117/"}, {"category": "Kart", "car": "Discoverer FX7 Rental Kart 200cc", "url": "https://www.overtake.gg/downloads/discoverer-fx7-rental-kart-200cc.80526/"}, {"category": "Kart", "car": "Discoverer FX5 4T Kart 270cc", "url": "https://www.overtake.gg/downloads/discoverer-fx5-4t-kart-270cc.86538/"}, {"category": "Club Racing", "car": "Suzuki Swift Sport Challenge UK", "url": "https://www.overtake.gg/downloads/suzuki-swift-sport-challenge-uk.86357/"}, {"category": "Tuned JDM", "car": "Mazda RX7 LBWK", "url": "https://www.overtake.gg/downloads/mazda-rx7-lbwk.86354/"}, {"category": "Touge", "car": "Nissan S12 Silvia Kouki", "url": "https://www.overtake.gg/downloads/nissan-s12-silvia-kouki.86262/"}, {"category": "GT / Tuned", "car": "BMW M3 GTR", "url": "https://www.overtake.gg/downloads/bmw-m3-gtr.85902/"}, {"category": "Historic GT", "car": "Ford GT40 Mk1", "url": "https://www.overtake.gg/downloads/ford-gt40-mk1-%E2%80%93-realistic-physics-update-kunos-edit.85642/"}, {"category": "Club Racing", "car": "Citroen 2CV UK Club Class", "url": "https://www.overtake.gg/downloads/citroen-2cv-uk-club-class.63818/"}, {"category": "Class 1", "car": "Alfa Romeo Giulia Class 1", "url": "https://www.overtake.gg/downloads/alfa-romeo-giulia-class-1.85381/"}, {"category": "Class 1", "car": "MTRacing Porsche 911 Class 1", "url": "https://www.overtake.gg/downloads/mtracing-porsche-911-class-1.83848/"}, {"category": "Spec Racing", "car": "Spec Racer Ford GEN 2", "url": "https://www.overtake.gg/downloads/spec-racer-ford-gen-2-srf.28643/"}, {"category": "Legends Cars", "car": "Legends Ford '34 Coupe", "url": "https://www.overtake.gg/downloads/legends-cars-mod.30281/"}, {"category": "Rallye", "car": "Peugeot 106 Rallye S2", "url": "https://www.overtake.gg/downloads/peugeot-106-rallye-s2.32274/"}, {"category": "JDM", "car": "Nissan Skyline R33 GT-R / GTS25t", "url": "https://www.overtake.gg/downloads/nissan-skyline-r33-gt-r-and-gts25t.65772/"}, {"category": "Drift", "car": "BMW E46 HGK Drift Challenge", "url": "https://www.overtake.gg/downloads/bmw-e46-hgk-drift-challenge-2018.21875/"}];
+const tracks=[{"name": "Feldbergring", "url": "https://www.overtake.gg/downloads/feldbergring.21195/"}, {"name": "Fonteny", "url": "https://www.overtake.gg/downloads/fonteny.30137/"}, {"name": "LA Canyons", "url": "https://www.overtake.gg/downloads/la-canyons.15067/"}, {"name": "Deutschlandring", "url": "https://www.overtake.gg/downloads/deutschlandring.25977/"}, {"name": "Bridgehampton", "url": "https://www.overtake.gg/downloads/bridgehampton-race-circuit.6604/"}, {"name": "Union Island", "url": "https://www.overtake.gg/downloads/union-island.45276/"}, {"name": "Sachsenring 2022", "url": "https://www.overtake.gg/downloads/sachsenring-2022.41511/"}, {"name": "Tor Poznań", "url": "https://www.overtake.gg/downloads/tor-pozna%C5%84.6118/"}, {"name": "Bremgarten 1950s", "url": "https://www.overtake.gg/downloads/bremgarten-1950s.43576/"}, {"name": "Thomson Road GP", "url": "https://www.overtake.gg/downloads/thomson-road-grand-prix.13694/"}, {"name": "Battenbergring", "url": "https://www.overtake.gg/downloads/battenbergring.51838/"}, {"name": "Road America", "url": "https://www.overtake.gg/downloads/road-america.32732/"}, {"name": "Watkins Glen", "url": "https://www.overtake.gg/downloads/watkins-glen-international.20204/"}, {"name": "Donington Park", "url": "https://www.overtake.gg/downloads/donington-park.3031/"}, {"name": "Virginia International Raceway", "url": "https://www.overtake.gg/downloads/virginia-international-raceway.11892/"}, {"name": "Riverside International Raceway", "url": "https://www.overtake.gg/downloads/riverside-international-raceway.9492/"}, {"name": "Okayama International", "url": "https://www.overtake.gg/downloads/okayama-international-circuit.15846/"}, {"name": "Bikernieki", "url": "https://www.overtake.gg/downloads/bikernieki-race-track.17186/"}, {"name": "Pacific Coast", "url": "https://www.overtake.gg/downloads/pacific-coast.12087/"}, {"name": "Donington Park 1938", "url": "https://www.overtake.gg/downloads/donington-park-grand-prix-circuit-1938.17313/"}, {"name": "Kyalami 2016", "url": "https://www.overtake.gg/downloads/kyalami-2016.29786/"}, {"name": "Road Atlanta", "url": "https://www.overtake.gg/downloads/road-atlanta.18293/"}, {"name": "Horsma Raceway", "url": "https://www.overtake.gg/downloads/horsma-raceway.27713/"}, {"name": "Goodwood Circuit", "url": "https://www.overtake.gg/downloads/goodwood-circuit.17228/"}, {"name": "LuccaRing", "url": "https://www.overtake.gg/downloads/luccaring-circuito-dei-baluardi.6544/"}, {"name": "New Jersey Motorsports Park", "url": "https://www.overtake.gg/downloads/new-jersey-motorsports-park-lightning.14212/"}, {"name": "High Force", "url": "https://www.overtake.gg/downloads/high-force.30347/"}, {"name": "Zwartkops Raceway", "url": "https://www.overtake.gg/downloads/zwartkops-raceway.52403/"}, {"name": "Deep Forest Raceway", "url": "https://www.overtake.gg/downloads/deep-forest-raceway.32848/"}, {"name": "Sveg Raceway", "url": "https://www.overtake.gg/downloads/sveg-raceway.18818/"}];
+
+function draw(canvas,count){
+ const x=canvas.getContext("2d"),s=canvas.width,c=s/2,r=c-18,sl=Math.PI*2/count;
+ x.clearRect(0,0,s,s);
+ for(let i=0;i<count;i++){
+   const a=i*sl,b=a+sl;
+   x.beginPath();x.moveTo(c,c);x.arc(c,c,r,a,b);x.closePath();
+   x.fillStyle=i%2?"#0e0e0e":"#191919";x.fill();
+   x.strokeStyle="rgba(255,255,255,.10)";x.lineWidth=1.4;x.stroke();
+   const m=a+sl/2;
+   x.save();x.translate(c,c);x.rotate(m);x.textAlign="right";x.textBaseline="middle";
+   x.fillStyle=i%5===0?"#ff625a":"rgba(255,255,255,.82)";
+   x.font="700 20px Arial";
+   x.fillText(String(i+1).padStart(2,"0"),r-44,0);
+   x.restore();
+ }
+ x.beginPath();x.arc(c,c,r,0,Math.PI*2);x.strokeStyle="#333";x.lineWidth=5;x.stroke();
+ x.beginPath();x.arc(c,c,r-21,0,Math.PI*2);x.strokeStyle="rgba(255,59,48,.28)";x.lineWidth=2;x.stroke();
+}
+
+const cw=document.getElementById("cw"),tw=document.getElementById("tw");
+draw(cw,cars.length);draw(tw,tracks.length);
+
+let carRot=0,trackRot=0,busy=false;
+const norm=d=>((d%360)+360)%360;
+
+// Uses the browser's random source without modulo bias.
+function randomInt(max){
+ const limit=Math.floor(0x100000000/max)*max;
+ const value=new Uint32Array(1);
+ do crypto.getRandomValues(value); while(value[0]>=limit);
+ return value[0]%max;
+}
+
+function shuffle(values){
+ for(let i=values.length-1;i>0;i--){
+   const j=randomInt(i+1);
+   [values[i],values[j]]=[values[j],values[i]];
+ }
+ return values;
+}
+
+// Draws every option once before reshuffling, like a deck of cards.
+// Saving the queue prevents a page refresh from resetting the deck.
+function createDrawBag(count,storageKey){
+ let state;
+ try{state=JSON.parse(localStorage.getItem(storageKey));}catch{}
+ if(!state||!Array.isArray(state.queue)||
+    state.queue.some(i=>!Number.isInteger(i)||i<0||i>=count)||
+    new Set(state.queue).size!==state.queue.length){
+   state={queue:[],last:null};
+ }
+
+ return ()=>{
+   if(state.queue.length===0){
+     state.queue=shuffle(Array.from({length:count},(_,i)=>i));
+     if(count>1&&state.queue[0]===state.last){
+       const swapWith=1+randomInt(count-1);
+       [state.queue[0],state.queue[swapWith]]=[state.queue[swapWith],state.queue[0]];
+     }
+   }
+   const selected=state.queue.shift();
+   state.last=selected;
+   try{localStorage.setItem(storageKey,JSON.stringify(state));}catch{}
+   return selected;
+ };
+}
+
+function rotationFor(current,index,count){
+ const slice=360/count;
+ const target=norm(-(index+.5)*slice);
+ const forward=norm(target-norm(current));
+ return current+360*(6+randomInt(3))+forward;
+}
+
+const nextCar=createDrawBag(cars.length,"ac-roulette-cars-v2");
+const nextTrack=createDrawBag(tracks.length,"ac-roulette-tracks-v2");
+
+document.getElementById("spin").addEventListener("click",()=>{
+ if(busy)return;
+ busy=true;
+ const btn=document.getElementById("spin");
+ btn.disabled=true;
+
+ const cr=document.getElementById("cr"),tr=document.getElementById("tr");
+ const cs=document.getElementById("cs"),ts=document.getElementById("ts");
+ const cl=document.getElementById("cl"),tl=document.getElementById("tl");
+
+ cr.textContent="...";
+ tr.textContent="...";
+ cs.textContent="";
+ ts.textContent="";
+ cl.style.display="none";
+ tl.style.display="none";
+
+ const carIndex=nextCar();
+ const trackIndex=nextTrack();
+ carRot=rotationFor(carRot,carIndex,cars.length);
+ trackRot=rotationFor(trackRot,trackIndex,tracks.length);
+
+ cw.style.transition="transform 5.5s cubic-bezier(.12,.74,.10,1)";
+ tw.style.transition="transform 6s cubic-bezier(.12,.74,.10,1)";
+ cw.style.transform=`rotate(${carRot}deg)`;
+ tw.style.transform=`rotate(${trackRot}deg)`;
+
+ setTimeout(()=>{
+   const v=cars[carIndex];
+   cr.textContent=v.category;
+   cs.textContent="Carro: "+v.car;
+   cl.href=v.url;
+   cl.style.display="inline-flex";
+ },5550);
+
+ setTimeout(()=>{
+   const v=tracks[trackIndex];
+   tr.textContent=v.name;
+   ts.textContent="Assetto Corsa";
+   tl.href=v.url;
+   tl.style.display="inline-flex";
+   busy=false;
+   btn.disabled=false;
+ },6050);
+});
+</script>
+</body>
+</html>
